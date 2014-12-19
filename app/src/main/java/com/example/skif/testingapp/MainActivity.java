@@ -34,7 +34,7 @@ import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
-    private List<AnonymousInfo> _allInfo;
+    private List<PhoneInfo> _allInfo;
     private ListView _listView;
 
     @Override
@@ -47,9 +47,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View itemClicked, int position,
                                     long id) {
-                String info = _allInfo.get(position).ContactName;
+                String info = _allInfo.get(position).PhoneName;
                 Intent intent = new Intent(MainActivity.this, ShowPageCode.class);
-                intent.putExtra("info", info);
+                intent.putExtra("PhoneName", info);
                 startActivity(intent);
             }
         });
@@ -73,15 +73,14 @@ public class MainActivity extends ActionBarActivity {
             } while (contacts.moveToNext());
 
             contacts.close();
-            _allInfo = info.AllInfos;
+            //_allInfo = info.AllInfos;
         } catch (Exception e) {
             String dd = e.getMessage();
         }
     }
 
     public void onClickToGetAll(View view) {
-
-        GetContacts();
+        /*GetContacts();
         if (_allInfo != null) {
             // Создаём адаптер ArrayAdapter, чтобы привязать массив к ListView
             final ArrayAdapter<AnonymousInfo> adapter;
@@ -89,35 +88,32 @@ public class MainActivity extends ActionBarActivity {
                     android.R.layout.simple_list_item_1, _allInfo);
             // Привяжем массив через адаптер к ListView
             _listView.setAdapter(adapter);
-        }
-        /*try {
-            String urlStr = Constants.ServerUrl+"all/jhbj";
+        }*/
+        try {
+            String urlStr = Constants.ServerUrl+"all_phones/0";
 
             Requester ut = new Requester();
-            ut.GetAll();
+            ut.GetAll(urlStr);
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
-    }
-
-    public void onClickToGetOne(View view) {
+        }
     }
 
     public void onClickToPost(View view) {
-        /*Intent intent = new Intent(MainActivity.this, add_activity.class);
-        startActivity(intent);*/
-        new RequestPostTask().execute("test", "", "");
+        Intent intent = new Intent(MainActivity.this, add_activity.class);
+        startActivity(intent);
+        //new RequestPostTask().execute("test", "", "");
     }
 
     public void SetList(String response) {
         Gson gson = new Gson();
         try {
-            AllInfo posts = gson.fromJson(response, AllInfo.class);
-            _allInfo = posts.AllInfos;
+            AllPhone posts = gson.fromJson(response, AllPhone.class);
+            _allInfo = posts.AllPhones;
             if (_allInfo != null) {
                 // Создаём адаптер ArrayAdapter, чтобы привязать массив к ListView
-                final ArrayAdapter<AnonymousInfo> adapter;
-                adapter = new ArrayAdapter<AnonymousInfo>(this,
+                final ArrayAdapter<PhoneInfo> adapter;
+                adapter = new ArrayAdapter<PhoneInfo>(this,
                         android.R.layout.simple_list_item_1, _allInfo);
                 // Привяжем массив через адаптер к ListView
                 _listView.setAdapter(adapter);
@@ -196,9 +192,8 @@ public class MainActivity extends ActionBarActivity {
             return anInfo;
         }
 
-        public void GetAll() throws IOException {
-            String urlStr = Constants.ServerUrl+"all/jhbj";
-            new RequestTask().execute(urlStr, urlStr, urlStr);
+        public void GetAll(String url) throws IOException {
+            new RequestTask().execute(url, url, url);
         }
 
         public String Post(String info) throws IOException {

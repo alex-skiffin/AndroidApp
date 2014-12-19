@@ -42,9 +42,9 @@ public class add_activity extends Activity {
             try {
                 InputStream inputStream = null;
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost http = new HttpPost("http://77.43.180.13:7070/post");
-                AnonymousInfo anInfo = new AnonymousInfo();
-                //anInfo.VerySecretInfo = uri[0].toString();
+                HttpPost http = new HttpPost(Constants.ServerUrl+"phone/0");
+                PhoneInfo anInfo = new PhoneInfo();
+                anInfo.PhoneName = uri[0].toString();
                 Gson gson = new Gson();
                 String anInfoJson = gson.toJson(anInfo);
                 StringEntity se = new StringEntity(anInfoJson);
