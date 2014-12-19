@@ -36,19 +36,6 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Получить выделенное"
-        android:textSize="10dp"
-        android:id="@+id/button2"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/button3"
-        android:layout_toRightOf="@+id/button"
-        android:layout_toEndOf="@+id/button"
-        android:nestedScrollingEnabled="false"
-        android:onClick="onClickToGetOne" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="Добавить запись"
         android:textSize="10dp"
         android:id="@+id/button3"

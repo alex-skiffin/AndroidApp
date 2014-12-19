@@ -1,7 +1,5 @@
 package com.example.skif.testingapp;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -12,6 +10,8 @@ import java.util.UUID;
 public class AnonymousInfo
 {
     public UUID Id = UUID.randomUUID();
+
+    public UUID PhoneId = UUID.randomUUID();
 
     public String ContactName = "user";
 
