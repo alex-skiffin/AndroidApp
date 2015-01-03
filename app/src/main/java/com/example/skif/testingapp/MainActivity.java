@@ -48,8 +48,10 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View itemClicked, int position,
                                     long id) {
                 String info = _allInfo.get(position).PhoneName;
+                String phoneId = _allInfo.get(position).Id.toString();
                 Intent intent = new Intent(MainActivity.this, ShowPageCode.class);
                 intent.putExtra("PhoneName", info);
+                intent.putExtra("PhoneId", phoneId);
                 startActivity(intent);
             }
         });
@@ -102,7 +104,6 @@ public class MainActivity extends ActionBarActivity {
     public void onClickToPost(View view) {
         Intent intent = new Intent(MainActivity.this, add_activity.class);
         startActivity(intent);
-        //new RequestPostTask().execute("test", "", "");
     }
 
     public void SetList(String response) {
@@ -146,40 +147,6 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class RequestPostTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        public String doInBackground(String... uri) {
-            String result = "Not Good";
-            try {
-                InputStream inputStream = null;
-                HttpClient httpclient = new DefaultHttpClient();
-                HttpPost http = new HttpPost(Constants.ServerUrl+ "post");
-                AnonymousInfo anInfo = new AnonymousInfo();
-                //anInfo.VerySecretInfo = uri[0].toString();
-                Gson gson = new Gson();
-                String anInfoJson = gson.toJson(_allInfo);
-                String length = String.valueOf(anInfoJson.length());
-                StringEntity se = new StringEntity(anInfoJson);
-                http.setEntity(se);
-                http.setHeader("Accept", "application/json");
-                http.setHeader("Content-type", "application/json");
-
-                HttpResponse httpResponse = httpclient.execute(http);
-                inputStream = httpResponse.getEntity().getContent();
-                result = inputStream.toString();
-            } catch (Exception exeption) {
-                result = exeption.getMessage();
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            Log.d("123", "Response: " + result);
-        }
-    }
     class Requester {
         private String response;
 

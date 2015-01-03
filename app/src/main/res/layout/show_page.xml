@@ -45,15 +45,18 @@
         android:layout_column="0"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:onClick="SendContactsToServer" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Показать мои контакты"
-        android:id="@+id/button8"
+        android:id="@+id/ShowMyContacts"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/button2"
-        android:layout_toStartOf="@+id/button2" />
+        android:layout_toStartOf="@+id/button2"
+        android:onClick="ReadLocalContacts"
+        android:textSize="10dp" />
 
 </RelativeLayout>
