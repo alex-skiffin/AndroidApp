@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Created by skif on 13.12.2014.
- */
 public class AnonymousInfo
 {
     public UUID Id = UUID.randomUUID();

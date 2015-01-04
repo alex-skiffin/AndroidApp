@@ -47,7 +47,7 @@ public class ShowPageCode extends Activity {
         _listView = (ListView) findViewById(R.id.listView);
         String phoneName = getIntent().getExtras().getString("PhoneName");
         _phoneId = UUID.fromString(getIntent().getExtras().getString("PhoneId"));
-        String urlStr = Constants.ServerUrl + "all_contacts/"+phoneName;
+        String urlStr = Constants.ServerUrl + "/all_contacts/"+phoneName;
 
         try {
 
@@ -127,7 +127,7 @@ public class ShowPageCode extends Activity {
         private String response;
 
         public AnonymousInfo Get(String id) throws IOException {
-            String urlStr = Constants.ServerUrl+"this/" + id;
+            String urlStr = Constants.ServerUrl+"/this/" + id;
 
             new RequestTask().execute(urlStr, urlStr, urlStr);
             //получаем ответ от сервера
@@ -141,7 +141,7 @@ public class ShowPageCode extends Activity {
 
         public String Post(String info) throws IOException {
             HttpClient httpclient = new DefaultHttpClient();
-            HttpPost http = new HttpPost(Constants.ServerUrl+"/post");
+            HttpPost http = new HttpPost(Constants.ServerUrl+"/post/");
             //AnonymousInfo anInfo = new AnonymousInfo();
             //anInfo.ContactName = info;
             Gson gson = new Gson();
@@ -199,7 +199,7 @@ public class ShowPageCode extends Activity {
             try {
                 InputStream inputStream = null;
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost http = new HttpPost(Constants.ServerUrl+ "contacts/0");
+                HttpPost http = new HttpPost(Constants.ServerUrl+ "/contacts/0");
                 AllInfo anInfo = new AllInfo();
                 anInfo.AllInfos = _allInfo;
                 //anInfo.VerySecretInfo = uri[0].toString();

@@ -1,9 +1,11 @@
 package com.example.skif.testingapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -14,7 +16,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
@@ -23,13 +24,11 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 
@@ -38,8 +37,15 @@ public class MainActivity extends ActionBarActivity {
     private ListView _listView;
 
     @Override
+    protected void onStart(){
+        super.onStart();
+        getPrefs();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         _listView = (ListView) findViewById(R.id.listView);
 
@@ -92,10 +98,9 @@ public class MainActivity extends ActionBarActivity {
             _listView.setAdapter(adapter);
         }*/
         try {
-            String urlStr = Constants.ServerUrl+"all_phones/0";
 
             Requester ut = new Requester();
-            ut.GetAll(urlStr);
+            ut.GetAll(Constants.ServerUrl+"/all_phones/");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -147,11 +152,23 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void onSettingsMenuClick(MenuItem item) {
+        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(intent);
+        //addPreferencesFromResource(R.xml.preferences);
+        //
+    }
+
+    private void getPrefs() {
+        // Get the xml/preferences.xml preferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        Constants.ServerUrl = prefs.getString("server_address", "http://192.168.1.105:7070");
+    }
     class Requester {
         private String response;
 
         public AnonymousInfo Get(String id) throws IOException {
-            String urlStr = Constants.ServerUrl+"this/" + id;
+            String urlStr = Constants.ServerUrl+"/this/" + id;
 
             new RequestTask().execute(urlStr, urlStr, urlStr);
             //получаем ответ от сервера
@@ -174,7 +191,6 @@ public class MainActivity extends ActionBarActivity {
             String response = httpclient.execute(http, new BasicResponseHandler());
             return response;
         }
-
 
         class RequestTask extends AsyncTask<String, Void, String> {
 
@@ -213,6 +229,7 @@ public class MainActivity extends ActionBarActivity {
                 Log.d("123", "Response: " + result);
                 SetList(result);
             }
+
         }
     }
 }

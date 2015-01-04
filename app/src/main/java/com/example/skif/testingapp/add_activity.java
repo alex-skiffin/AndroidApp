@@ -42,7 +42,7 @@ public class add_activity extends Activity {
             try {
                 InputStream inputStream = null;
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost http = new HttpPost(Constants.ServerUrl+"phone/0");
+                HttpPost http = new HttpPost(Constants.ServerUrl+"/phone/0");
                 PhoneInfo anInfo = new PhoneInfo();
                 anInfo.PhoneName = uri[0].toString();
                 Gson gson = new Gson();
