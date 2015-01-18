@@ -5,10 +5,10 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
@@ -25,11 +26,20 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -37,9 +47,50 @@ public class MainActivity extends ActionBarActivity {
     private ListView _listView;
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         getPrefs();
+        KeyStore ks = null;
+        try {
+            ks = KeyStore.getInstance("BKS");
+            final InputStream in = this.getResources().openRawResource(R.raw.mystore);
+            try {
+                String pass = "sviblo";
+                ks.load(in, pass.toCharArray());
+            } finally {
+                in.close();
+            }
+        } catch (Exception e) {
+            Log.i("main", "Exception - " + e.toString());
+        }
+        TrustManagerFactory Main_TMF = null;
+        try {
+            Main_TMF = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            Main_TMF.init(ks);
+        } catch (Exception e) {
+            Log.i("Your_Function_Name", "Exception - " + e.toString());
+        }
+
+        X509TrustManager Main_Trust_Manager = null;
+
+        for (TrustManager tm : Main_TMF.getTrustManagers())
+            if (tm instanceof X509TrustManager) {
+                Main_Trust_Manager = (X509TrustManager) tm;
+                break;
+            }
+
+        final X509TrustManager Cur_Trust_Manager = Main_Trust_Manager;
+        SSLContext sslContext = null;
+        try {
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, new TrustManager[]{Cur_Trust_Manager}, new SecureRandom());
+        } catch (NoSuchAlgorithmException e) {
+            Log.i("Your_Function_Name", "NoSuchAlgorithmException - " + e.toString());
+        } catch (KeyManagementException e) {
+            Log.i("Your_Function_Name", "KeyManagementException - " + e.toString());
+        } catch (Exception e) {
+            Log.i("Your_Function_Name", "Exception - " + e.toString());
+        }
     }
 
     @Override
@@ -100,7 +151,7 @@ public class MainActivity extends ActionBarActivity {
         try {
 
             Requester ut = new Requester();
-            ut.GetAll(Constants.ServerUrl+"/all_phones/");
+            ut.GetAll(Constants.ServerUrl + "/all_phones/");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -162,13 +213,16 @@ public class MainActivity extends ActionBarActivity {
     private void getPrefs() {
         // Get the xml/preferences.xml preferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        Constants.ServerUrl = prefs.getString("server_address", "http://192.168.1.105:7070");
+        Constants.ServerUrl = prefs.getString("server_address", "https://192.168.1.105");
+        Constants.ServerPort = prefs.getString("server_port", "7070");
+        Constants.ServerPortSSl = prefs.getString("server_ssl_port", "17070");
     }
+
     class Requester {
         private String response;
 
         public AnonymousInfo Get(String id) throws IOException {
-            String urlStr = Constants.ServerUrl+"/this/" + id;
+            String urlStr = Constants.ServerUrl + "/this/" + id;
 
             new RequestTask().execute(urlStr, urlStr, urlStr);
             //получаем ответ от сервера
@@ -181,8 +235,8 @@ public class MainActivity extends ActionBarActivity {
         }
 
         public String Post(String info) throws IOException {
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost http = new HttpPost(Constants.ServerUrl+"/post");
+            HttpClient httpclient = new SslHttpsClient(getApplicationContext());
+            HttpPost http = new HttpPost(Constants.ServerUrl + "/post");
             //AnonymousInfo anInfo = new AnonymousInfo();
             //anInfo.ContactName = info;
             Gson gson = new Gson();
@@ -196,7 +250,8 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public String doInBackground(String... uri) {
-                HttpClient httpclient = new DefaultHttpClient();
+
+                HttpClient httpclient = new SslHttpsClient(getApplicationContext());
                 HttpResponse hResponse;
                 String responseString = null;
                 try {
@@ -229,7 +284,7 @@ public class MainActivity extends ActionBarActivity {
                 Log.d("123", "Response: " + result);
                 SetList(result);
             }
-
         }
     }
 }
+

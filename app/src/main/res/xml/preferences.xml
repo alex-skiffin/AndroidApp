@@ -6,7 +6,15 @@
 
         <EditTextPreference android:key="server_address"
             android:title="Адрес сервера"
-            android:defaultValue="http://192.168.1.105:7070"
+            android:defaultValue="https://192.168.1.105"
+            />
+        <EditTextPreference android:key="server_port"
+            android:title="Порт сервера"
+            android:defaultValue="7070"
+            />
+        <EditTextPreference android:key="server_ssl_port"
+            android:title="SSL порт сервера"
+            android:defaultValue="17070"
             />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -140,7 +140,7 @@ public class ShowPageCode extends Activity {
         }
 
         public String Post(String info) throws IOException {
-            HttpClient httpclient = new DefaultHttpClient();
+            HttpClient httpclient = new SslHttpsClient(getApplicationContext());
             HttpPost http = new HttpPost(Constants.ServerUrl+"/post/");
             //AnonymousInfo anInfo = new AnonymousInfo();
             //anInfo.ContactName = info;
@@ -156,7 +156,7 @@ public class ShowPageCode extends Activity {
 
             @Override
             public String doInBackground(String... uri) {
-                HttpClient httpclient = new DefaultHttpClient();
+                HttpClient httpclient = new SslHttpsClient(getApplicationContext());
                 HttpResponse hResponse;
                 String responseString = null;
                 try {

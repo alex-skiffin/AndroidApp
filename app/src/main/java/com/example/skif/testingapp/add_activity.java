@@ -13,8 +13,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -41,7 +41,7 @@ public class add_activity extends Activity {
             String result = "Not Good";
             try {
                 InputStream inputStream = null;
-                HttpClient httpclient = new DefaultHttpClient();
+                HttpClient httpclient = new SslHttpsClient(getApplicationContext());
                 HttpPost http = new HttpPost(Constants.ServerUrl+"/phone/0");
                 PhoneInfo anInfo = new PhoneInfo();
                 anInfo.PhoneName = uri[0].toString();
