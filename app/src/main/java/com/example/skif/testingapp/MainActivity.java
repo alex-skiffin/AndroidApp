@@ -139,15 +139,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onClickToGetAll(View view) {
-        /*GetContacts();
-        if (_allInfo != null) {
-            // Создаём адаптер ArrayAdapter, чтобы привязать массив к ListView
-            final ArrayAdapter<AnonymousInfo> adapter;
-            adapter = new ArrayAdapter<AnonymousInfo>(this,
-                    android.R.layout.simple_list_item_1, _allInfo);
-            // Привяжем массив через адаптер к ListView
-            _listView.setAdapter(adapter);
-        }*/
         try {
 
             Requester ut = new Requester();

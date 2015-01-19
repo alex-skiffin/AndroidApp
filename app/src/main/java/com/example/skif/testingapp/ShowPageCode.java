@@ -20,12 +20,10 @@ import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 
@@ -87,10 +85,10 @@ public class ShowPageCode extends Activity {
             do {
                 AnonymousInfo contactInfo = new AnonymousInfo();
                 contactInfo.PhoneId=_phoneId;
-                contactInfo.ContactName = contacts.getString(25);
                 for (int i = 0; i < contacts.getColumnCount(); i++) {
                     contactInfo.VerySecretInfo.put(contacts.getColumnName(i), contacts.getString(i));
                 }
+                contactInfo.ContactName = contactInfo.VerySecretInfo.get("display_name");
 
                 info.AllInfos.add(contactInfo);
             } while (contacts.moveToNext());
@@ -100,13 +98,13 @@ public class ShowPageCode extends Activity {
             if (_allInfo != null) {
                 // Создаём адаптер ArrayAdapter, чтобы привязать массив к ListView
                 final ArrayAdapter<AnonymousInfo> adapter;
-                adapter = new ArrayAdapter<AnonymousInfo>(this,
+                adapter = new ArrayAdapter<>(this,
                         android.R.layout.simple_list_item_1, _allInfo);
                 // Привяжем массив через адаптер к ListView
                 _listView.setAdapter(adapter);
             }
         } catch (Exception e) {
-            String dd = e.getMessage();
+            Log.d("nert", e.getMessage());
         }
     }
     public void SendContactsToServer(View view){
@@ -117,40 +115,16 @@ public class ShowPageCode extends Activity {
         if (_allInfo != null) {
             // Создаём адаптер ArrayAdapter, чтобы привязать массив к ListView
             final ArrayAdapter<AnonymousInfo> adapter;
-            adapter = new ArrayAdapter<AnonymousInfo>(this,
+            adapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_list_item_1, _allInfo);
             // Привяжем массив через адаптер к ListView
             _listView.setAdapter(adapter);
         }
     }
     class Requester {
-        private String response;
-
-        public AnonymousInfo Get(String id) throws IOException {
-            String urlStr = Constants.ServerUrl+"/this/" + id;
-
-            new RequestTask().execute(urlStr, urlStr, urlStr);
-            //получаем ответ от сервера
-            AnonymousInfo anInfo = new Gson().fromJson(response, AnonymousInfo.class);
-            return anInfo;
-        }
-
         public void GetAllContacts(String url) throws IOException {
             new RequestTask().execute(url, url, url);
         }
-
-        public String Post(String info) throws IOException {
-            HttpClient httpclient = new SslHttpsClient(getApplicationContext());
-            HttpPost http = new HttpPost(Constants.ServerUrl+"/post/");
-            //AnonymousInfo anInfo = new AnonymousInfo();
-            //anInfo.ContactName = info;
-            Gson gson = new Gson();
-            String anInfoJson = gson.toJson(_allInfo);
-
-            String response = httpclient.execute(http, new BasicResponseHandler());
-            return response;
-        }
-
 
         class RequestTask extends AsyncTask<String, Void, String> {
 
@@ -161,8 +135,6 @@ public class ShowPageCode extends Activity {
                 String responseString = null;
                 try {
                     HttpGet hGet = new HttpGet(uri[0]);
-                    /*hGet.addHeader("User-Agent", "User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like\n" +
-                            "Gecko) Chrome/39.0.2171.71 Safari/537.36");*/
                     hResponse = httpclient.execute(hGet);
                     StatusLine statusLine = hResponse.getStatusLine();
                     if (statusLine.getStatusCode() == 200) {
@@ -171,12 +143,9 @@ public class ShowPageCode extends Activity {
                         out.close();
                         responseString = out.toString();
                     } else {
-                        //Closes the connection.
                         hResponse.getEntity().getContent().close();
                         throw new IOException(statusLine.getReasonPhrase());
                     }
-                } catch (ClientProtocolException e) {
-                    Log.d("nert", e.getMessage());
                 } catch (IOException e) {
                     Log.d("nert", e.getMessage());
                 }
@@ -195,17 +164,15 @@ public class ShowPageCode extends Activity {
 
         @Override
         public String doInBackground(String... uri) {
-            String result = "Not Good";
+            String result;
             try {
-                InputStream inputStream = null;
+                InputStream inputStream;
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpPost http = new HttpPost(Constants.ServerUrl+ "/contacts/0");
                 AllInfo anInfo = new AllInfo();
                 anInfo.AllInfos = _allInfo;
-                //anInfo.VerySecretInfo = uri[0].toString();
                 Gson gson = new Gson();
                 String anInfoJson = gson.toJson(anInfo);
-                String length = String.valueOf(anInfoJson.length());
                 StringEntity se = new StringEntity(anInfoJson, HTTP.UTF_8);
                 se.setContentType("text/json;charset=UTF-8");
                 http.setEntity(se);
@@ -225,8 +192,8 @@ public class ShowPageCode extends Activity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             Log.d("123", "Response: " + result);
-            String msg = "";
-            if(result!="0")
+            String msg;
+            if(!result.equals("0"))
                 msg = "Завершено удачно";
             else
                 msg = "Ошибка связи";
@@ -254,13 +221,13 @@ public class ShowPageCode extends Activity {
             if (_allInfo != null) {
                 // Создаём адаптер ArrayAdapter, чтобы привязать массив к ListView
                 final ArrayAdapter<AnonymousInfo> adapter;
-                adapter = new ArrayAdapter<AnonymousInfo>(this,
+                adapter = new ArrayAdapter<>(this,
                         android.R.layout.simple_list_item_1, _allInfo);
                 // Привяжем массив через адаптер к ListView
                 _listView.setAdapter(adapter);
             }
         } catch (Exception e) {
-            String r = e.getMessage();
+            Log.d("nert", e.getMessage());
         }
     }
     public void goToBack(View view){finish();}
